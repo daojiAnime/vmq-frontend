@@ -7,6 +7,10 @@ import { computed, ref } from 'vue';
 import { AuthenticationForgetPassword, z } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
+import { message } from 'ant-design-vue';
+
+import { forgetPasswordApi } from '#/api/core/auth';
+
 defineOptions({ name: 'ForgetPassword' });
 
 const loading = ref(false);
@@ -28,9 +32,13 @@ const formSchema = computed((): VbenFormSchema[] => {
   ];
 });
 
-function handleSubmit(value: Recordable<any>) {
-  // eslint-disable-next-line no-console
-  console.log('reset email:', value);
+async function handleSubmit(value: Recordable<any>) {
+  try {
+    await forgetPasswordApi(value);
+    message.success($t('vmq.authentication.forgetPasswordSuccess'));
+  } catch (error) {
+    console.error(error);
+  }
 }
 </script>
 

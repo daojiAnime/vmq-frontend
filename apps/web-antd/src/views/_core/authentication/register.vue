@@ -3,9 +3,15 @@ import type { VbenFormSchema } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 
 import { computed, h, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { AuthenticationRegister, z } from '@vben/common-ui';
+import { LOGIN_PATH } from '@vben/constants';
 import { $t } from '@vben/locales';
+
+import { message } from 'ant-design-vue';
+
+import { registerApi } from '#/api/core/auth';
 
 defineOptions({ name: 'Register' });
 
@@ -13,6 +19,15 @@ const loading = ref(false);
 
 const formSchema = computed((): VbenFormSchema[] => {
   return [
+    {
+      component: 'VbenInput',
+      componentProps: {
+        placeholder: $t('authentication.emailTip'),
+      },
+      fieldName: 'email',
+      label: $t('authentication.email'),
+      rules: z.string().email({ message: $t('authentication.emailTip') }),
+    },
     {
       component: 'VbenInput',
       componentProps: {
@@ -81,9 +96,16 @@ const formSchema = computed((): VbenFormSchema[] => {
   ];
 });
 
-function handleSubmit(value: Recordable<any>) {
-  // eslint-disable-next-line no-console
-  console.log('register submit:', value);
+async function handleSubmit(value: Recordable<any>) {
+  try {
+    await registerApi(value);
+    // 注册成功后跳转到登录页
+    message.success($t('authentication.registerSuccess'));
+    const router = useRouter();
+    await router.replace({ path: LOGIN_PATH });
+  } catch (error) {
+    console.error(error);
+  }
 }
 </script>
 

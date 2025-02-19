@@ -1,0 +1,12 @@
+{
+  "authentication": {
+    "forgetPasswordSuccess": "A reset password email has been sent to the email address, please check it."
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "help": "",
+    "monitor": "Client Monitor",
+    "orders": "Order List",
+    "settings": "System Settings"
+  }
+}

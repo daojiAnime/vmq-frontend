@@ -1,0 +1,12 @@
+{
+  "authentication": {
+    "forgetPasswordSuccess": "已发送重置密码邮件至邮箱，请查收。"
+  },
+  "menu": {
+    "dashboard": "数据大盘",
+    "help": "帮助文档",
+    "monitor": "终端监控",
+    "orders": "订单列表",
+    "settings": "系统设置"
+  }
+}
