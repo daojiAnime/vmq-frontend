@@ -40,7 +40,7 @@ const routes: RouteRecordRaw[] = [
       keepAlive: true,
       order: 2004,
       title: $t('vmq.menu.help'),
-      iframeSrc: 'https://tailwindcss.com/',
+      iframeSrc: 'https://vmq-docs.daojichang.eu.org/',
     },
     name: 'VmqHelp',
     path: '/vmq-help',
