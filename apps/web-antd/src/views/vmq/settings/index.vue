@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 import { Page } from '@vben/common-ui';
 
@@ -7,6 +7,10 @@ import { Card, message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { getSettingsApi, updateSettingApi } from '#/api';
+import { QRCodeUpload } from '#/components';
+
+const wechatQRCode = ref('');
+const alipayQRCode = ref('');
 
 const [BaseForm, baseFormApi] = useVbenForm({
   // 所有表单项共用，可单独在表单内覆盖
@@ -52,10 +56,30 @@ const [BaseForm, baseFormApi] = useVbenForm({
     },
     {
       component: 'Input',
+      fieldName: 'upload-wechat',
+      hideLabel: true,
+      formItemClass: 'ml-[160px]',
+      componentProps: {
+        placeholder: '请上传微信二维码',
+        disabled: true,
+      },
+    },
+    {
+      component: 'Input',
       fieldName: 'alipay_qrcode',
       label: '支付宝二维码',
       componentProps: {
         placeholder: '请输入支付宝二维码',
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'upload-alipay',
+      hideLabel: true,
+      formItemClass: 'ml-[160px]',
+      componentProps: {
+        placeholder: '请上传支付宝二维码',
+        disabled: true,
       },
     },
     {
@@ -142,11 +166,28 @@ async function loadSettingsData() {
       is_order_price_increase: setting.is_order_price_increase,
       order_real_price_step: setting.order_real_price_step,
     });
+
+    wechatQRCode.value = setting.wechat_qrcode || '';
+    alipayQRCode.value = setting.alipay_qrcode || '';
   } catch (error) {
     message.error('获取系统设置失败');
     console.error(error);
   }
 }
+
+watch(
+  () => wechatQRCode.value,
+  (value) => {
+    baseFormApi.setValues({ wechat_qrcode: value });
+  },
+);
+
+watch(
+  () => alipayQRCode.value,
+  (value) => {
+    baseFormApi.setValues({ alipay_qrcode: value });
+  },
+);
 
 onMounted(() => {
   /**
@@ -160,7 +201,14 @@ onMounted(() => {
 <template>
   <Page auto-content-height>
     <Card title="系统设置">
-      <BaseForm />
+      <BaseForm>
+        <template #upload-wechat>
+          <QRCodeUpload type="wechat" v-model="wechatQRCode" />
+        </template>
+        <template #upload-alipay>
+          <QRCodeUpload type="alipay" v-model="alipayQRCode" />
+        </template>
+      </BaseForm>
     </Card>
   </Page>
 </template>
