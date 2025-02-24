@@ -24,8 +24,28 @@ show_help() {
 }
 
 # 获取版本号
-TAG=$(source apps/web-antd/.env && echo "$VERSION")
-IMAGE_NAME="$BASE_NAME:$TAG"
+# 如果没有指定 tag，则从环境变量获取
+if [ -z "$TAG" ]; then
+    # 尝试从 .env 文件获取版本号
+    if [ -f "apps/web-antd/.env" ]; then
+        TAG=$(source apps/web-antd/.env && echo "$VERSION")
+    fi
+    # 如果还是空的，使用 git SHA
+    if [ -z "$TAG" ]; then
+        TAG=$GIT_SHA
+    fi
+fi
+
+# 如果环境变量 TAG 存在且以 v 开头，则使用它。否则退出脚本，并提示 TAG 不合法，返回 1
+if [[ -n "$TAG" && "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+    VERSION_TAG=$TAG
+else
+    echo "❌ 环境变量 TAG 不合法，请检查 TAG 是否以 v 开头，并符合 semver 格式"
+    exit 1
+fi
+
+
+IMAGE_NAME="$BASE_NAME:$VERSION_TAG"
 LATEST_IMAGE_NAME="$BASE_NAME:latest"
 
 # 默认平台为 linux/amd64
@@ -70,6 +90,8 @@ docker buildx build \
   --push -t $LATEST_IMAGE_NAME .
 
 if [ $? -eq 0 ]; then
+    # 防止 github actions 自动屏蔽敏感词
+    ACTIONS_STEP_DEBUG=true
     echo "✅ 镜像构建并推送成功！"
     echo "镜像信息: $IMAGE_NAME"
     echo "最新镜像信息: $LATEST_IMAGE_NAME"

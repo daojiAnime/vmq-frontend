@@ -9,6 +9,7 @@ on:
 env:
   REGISTRY: docker.io # 默认Docker Hub仓库，可替换为其他仓库地址
   IMAGE_NAME: daoji/vmq-fastapi-frontend
+  TAG: ${{ github.ref_name }}
   # IMAGE_NAME: ${{ github.repository }} # 使用仓库名作为镜像名
 
 jobs:
@@ -31,6 +32,11 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Set TAG
+        run: |
+          echo "TAG: ${{ env.TAG }}"
+          echo "IMAGE_NAME: ${{ env.IMAGE_NAME }}"
 
       - name: Build and push using script
         run: |
