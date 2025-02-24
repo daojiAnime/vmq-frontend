@@ -8,6 +8,7 @@
  # @Description: 构建并推送镜像
 ###
 
+BASE_NAME="daoji/vmq-fastapi-frontend"
 # 显示帮助信息
 show_help() {
     echo "用法: $0 [选项]"
@@ -24,7 +25,8 @@ show_help() {
 
 # 获取版本号
 TAG=$(source apps/web-antd/.env && echo "$VERSION")
-IMAGE_NAME="daoji/vmq-fastapi-frontend:$TAG"
+IMAGE_NAME="$BASE_NAME:$TAG"
+LATEST_IMAGE_NAME="$BASE_NAME:latest"
 
 # 默认平台为 linux/amd64
 PLATFORM="linux/amd64"
@@ -59,15 +61,18 @@ done
 echo "开始构建镜像..."
 echo "目标平台: $PLATFORM"
 echo "镜像标签: $IMAGE_NAME"
+echo "最新镜像标签: $LATEST_IMAGE_NAME"
 
 docker buildx build \
   --platform $PLATFORM \
   -f scripts/vmq/Dockerfile \
-  --push -t $IMAGE_NAME .
+  --push -t $IMAGE_NAME \
+  --push -t $LATEST_IMAGE_NAME .
 
 if [ $? -eq 0 ]; then
     echo "✅ 镜像构建并推送成功！"
     echo "镜像信息: $IMAGE_NAME"
+    echo "最新镜像信息: $LATEST_IMAGE_NAME"
 else
     echo "❌ 镜像构建或推送失败！"
     exit 1

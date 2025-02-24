@@ -17,8 +17,6 @@ COPY . /app
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile && \
     pnpm run build --filter=@vben/web-antd
 
-RUN echo "Builder Success 🎉"
-
 FROM nginx:stable-alpine AS production
 
 RUN echo "types { application/javascript js mjs; }" > /etc/nginx/conf.d/mjs.conf
